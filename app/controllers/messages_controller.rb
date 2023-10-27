@@ -28,10 +28,11 @@ class MessagesController < ApplicationController
         format.turbo_stream do
           render turbo_stream: [
             turbo_stream.update('new_message',partial: 'messages/form' , locals: {message: Message.new}),
-            turbo_stream.prepend('messages' , partial: 'messages/message', locals: {message: @message})
+            turbo_stream.prepend('messages' , partial: 'messages/message', locals: {message: @message}),
+            turbo_stream.update('notice', partial: 'messages/notice', locals: { notice: 'Message has been successfully created.' })
           ]
         end
-        format.html { redirect_to message_url(@message), notice: "Message was successfully created." }
+        format.html { redirect_to message_url(@message), notice: "Message has been successfully created." }
         format.json { render :show, status: :created, location: @message }
       else
         format.turbo_stream do
@@ -49,7 +50,7 @@ class MessagesController < ApplicationController
   def update
     respond_to do |format|
       if @message.update(message_params)
-        format.html { redirect_to message_url(@message), notice: "Message was successfully updated." }
+        format.html { redirect_to message_url(@message), notice: "Message has been successfully updated." }
         format.json { render :show, status: :ok, location: @message }
       else
         format.html { render :edit, status: :unprocessable_entity }
@@ -63,7 +64,13 @@ class MessagesController < ApplicationController
     @message.destroy
 
     respond_to do |format|
-      format.html { redirect_to messages_url, notice: "Message was successfully destroyed." }
+      format.turbo_stream do
+        render turbo_stream: [ 
+          turbo_stream.remove(@message),
+          turbo_stream.update('notice', partial: 'messages/notice', locals: { notice: 'Message has been successfully destroyed.' })
+        ]
+      end
+      format.html { redirect_to messages_url, notice: "Message has been successfully destroyed." }
       format.json { head :no_content }
     end
   end

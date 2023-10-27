@@ -1,4 +1,4 @@
-<p style="color: green"><%= notice %></p>
+<p id = 'notice', style="color: green"><%= notice %></p>
 
 <h1>Messages</h1>
  <div id = 'new_message'>
@@ -12,3 +12,20 @@
 </div>
 
 <%= link_to "New message", new_message_path %>
+
+<script>
+
+$(document).on('turbo:load', function() {
+  console.log("I am here");
+  const flashNotice = document.getElementById('notice');
+
+  if (flashNotice) {
+    // Display the flash notice for 5 seconds (5000 milliseconds)
+    setTimeout(function() {
+      flashNotice.style.display = 'none';
+    }, 10000);
+  }
+});
+
+
+  </script>
